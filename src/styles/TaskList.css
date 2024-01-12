@@ -1,0 +1,27 @@
+.task-list {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    /* right: 5%;
+    top: 15%; */
+    /* left: %; */
+    width: 92%;
+    height: 83%;
+    max-height: 85%;
+    padding: 35px 0 20px 0;
+    bottom: 20px;
+    border-radius: 1em;
+    border: 3px dotted rgba(8, 239, 173, 0.45);
+    background-color: rgb(40, 40, 40);
+    box-shadow: 10px 15px 15px rgba(0, 0, 0, 0.3);
+    overflow-y: hidden;
+    overflow-x: hidden;
+    z-index: 10;
+    transition: overflow-y 0.5s ease;
+}
+.task-list:hover{
+    transition: overflow-y 0.5s ease;
+    overflow-y: auto;
+}
