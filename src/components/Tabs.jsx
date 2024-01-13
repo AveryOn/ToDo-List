@@ -6,7 +6,7 @@ export default function Tabs({openCompletedTasks}) {
     return (
         <div className="tabs">
             <ul>
-                <Tab onClick={openCompletedTasks}>Show completed tasks</Tab>
+                <Tab onClick={openCompletedTasks}>Выполненные задачи</Tab>
             </ul>
         </div>
     )

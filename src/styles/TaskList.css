@@ -1,12 +1,20 @@
-.task-list {
+.material-symbols-outlined {
+    color: rgb(8, 239, 173);
+    scale: 1.2;
+    font-variation-settings:
+        'FILL' 0,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 24
+}
+
+.task-list__parent {
     position: absolute;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    /* right: 5%;
-    top: 15%; */
-    /* left: %; */
+    align-self: center;
     width: 92%;
     height: 83%;
     max-height: 85%;
@@ -19,9 +27,45 @@
     overflow-y: hidden;
     overflow-x: hidden;
     z-index: 10;
-    transition: overflow-y 0.5s ease;
 }
-.task-list:hover{
-    transition: overflow-y 0.5s ease;
+
+.task-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    align-self: center;
+    width: 90%;
+    height: 100%;
+    bottom: 20px;
+    border-radius: 1em;
+    background-color: rgb(40, 40, 40);
+    overflow-y: hidden;
+    overflow-x: hidden;
+    z-index: 10;
+}
+
+.task-list:hover {
     overflow-y: auto;
+}
+
+.button-open-tabs {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    align-self: flex-start;
+    outline: rgba(0, 0, 0, 0.0);
+    color: rgb(8, 239, 173);
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.5 ease;
+}
+
+.button-open-tabs:hover {
+    transition: opacity 0.5 ease;
+    opacity: 0.8;
 }

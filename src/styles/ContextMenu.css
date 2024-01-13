@@ -1,0 +1,34 @@
+
+.context-menu__list {
+    position: absolute;
+    right: 8%;
+    top: 10px;
+    width: max-content;
+    height: max-content;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: rgb(27, 221, 166);
+    border-radius: 1em;
+    background-color: rgb(31, 31, 31);
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    z-index: 1000;
+    overflow: hidden;
+}
+.context-menu__list--item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 230px;
+    height: 40px;
+    cursor: pointer;
+    transition: .7 ease;
+}
+.context-menu__list--item:hover{
+    transition: .7 ease;
+    background-color: rgb(47, 47, 47);
+}
+.context-menu__list--item + .context-menu__list--item {
+    border-top: 1px solid rgba(27, 221, 166, 0.5);
+}
