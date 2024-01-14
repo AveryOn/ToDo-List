@@ -1,8 +1,9 @@
 
 .context-menu__list {
     position: absolute;
-    right: 8%;
-    top: 10px;
+    right: -10%;
+    top: -50%;
+    scale: 0;
     width: max-content;
     height: max-content;
     display: flex;
@@ -13,8 +14,9 @@
     border-radius: 1em;
     background-color: rgb(31, 31, 31);
     font-family: Verdana, Geneva, Tahoma, sans-serif;
-    z-index: 1000;
+    z-index: 999999;
     overflow: hidden;
+    box-shadow: 10px 15px 15px rgba(0, 0, 0, 0.3);
 }
 .context-menu__list--item {
     display: flex;

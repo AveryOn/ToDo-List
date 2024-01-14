@@ -19,3 +19,7 @@
     transition: box-shadow .5s ease;
     box-shadow: none;
 }
+
+.tab + .tab {
+    margin-top: 10px;
+}

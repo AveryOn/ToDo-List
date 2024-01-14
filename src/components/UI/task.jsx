@@ -1,17 +1,46 @@
 import React, { useEffect, useState } from "react";
 import ContextMenu from "./ContextMenu";
 import '../../styles/task.css';
+import gsap from "gsap";
 
-export default function Task({ data, id, completeTask, isCompletedTasks }) {
+export default function Task({
+    data,
+    id,
+    completeTask,
+    openEditorTask,
+    setTitleTask,
+    setBodyTask,
+    deleteTask,
+    setCurrentTaskID,
+}) {
     const [isActiveMenuTask, setIsActiveMenuTask] = useState(false);
+    // Функция отображает контекстное меню задачи
     function activeContextMenu(event) {
         event.stopPropagation();
-        if(isActiveMenuTask) setIsActiveMenuTask(false);
-        else setIsActiveMenuTask(true);
+        if (isActiveMenuTask) {
+            Promise.resolve(gsap.to('.context-menu__list', { scale: 0, top: '-50%', right: '-10%', duration: .2 }))
+                .then(() => setIsActiveMenuTask(false));
+        }
+        else {
+            Promise.resolve(setIsActiveMenuTask(true))
+                .then(() => gsap.to('.context-menu__list', { scale: 1, top: '-5%', right: '8%', duration: .4 }));
+        }
     }
+    // Рендеринг Контекстного меню Задачи
     let renderMenu;
-    if(isActiveMenuTask) {
-        renderMenu = <ContextMenu/>
+    if (isActiveMenuTask) {
+        renderMenu = <ContextMenu
+            task={data}
+            taskID={id}
+            isCompleteTask={data.isComplete}
+            completeTask={completeTask}
+            setIsActiveMenuTask={setIsActiveMenuTask}
+            openEditorTask={openEditorTask}
+            setTitleTask={setTitleTask}
+            setBodyTask={setBodyTask}
+            deleteTask={deleteTask}
+            setCurrentTaskID={setCurrentTaskID}
+        />
     } else {
         renderMenu = null;
     }
