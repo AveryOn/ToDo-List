@@ -1,10 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import randomUUID from './utils/randomUUID';
 import MyNavbar from './components/navbar';
 import TaskList from './components/TaskList';
 import Tabs from './components/Tabs';
 import './styles/App.css';
+import {
+    createTaskDB,
+    getTasksDB,
+    completeTaskDB,
+    returnTaskDB,
+    editTaskDB,
+    deleteTaskDB,
+} from './requiest';
 import gsap from 'gsap';
+import randomUUID from './utils/randomUUID';
 
 const App = () => {
     const [tasks, setTasks] = useState([]);
@@ -17,6 +25,7 @@ const App = () => {
     const [modeView, setModeView] = useState({ title: 'Текущие задачи', current: 'not-complete', alaviable: ['not-complete', 'complete', 'creation', 'edit'] })
     const [isCreateNewTask, setIsCreateNewTask] = useState(false);
     const [isNotTasks, setIsNotTasks] = useState(false);
+    const [lengthTasks, setLengthTasks] = useState({ completedTasks: 0, tasks: 0 })
 
     if (tasks.length && modeView.current === 'not-complete') {
         gsap.to('.navbar__mode-view', { right: '0%', duration: 0.7, delay: 0.5 })
@@ -24,50 +33,36 @@ const App = () => {
 
     // Получение массива задач и сортировка их по массивам Выполненных и Не выполненных задач
     useEffect(() => {
-        // let fetchingTasks = [
-        //     { id: 'suehifes3254', title: 'Somthing To DO', body: 'example body', status: 'in progress', isComplete: false, },
-        //     { id: 'glrs0kg4a', title: 'Somthing To DO_2', body: 'example body+@2', status: 'in progress', isComplete: false, },
-        //     { id: 'jsijef234gwreh', title: 'Somthing To DO_2', body: 'example body+@2', status: 'in progress', isComplete: false, },
-        //     { id: '4389wyjsrgje', title: 'Somthing To DO_2', body: 'example body+@2', status: 'in progress', isComplete: false, },
-        //     { id: 'qasfg49w3aoe', title: 'Somthing To DO_2', body: 'example body+@2', status: 'in progress', isComplete: false, },
-        //     { id: '489ew03ejgf', title: 'Somthing To DO_2', body: 'example body+@2', status: 'in progress', isComplete: false, },
-        //     { id: '43j4w8jeigsw', title: 'Somthing To DO_2', body: 'example body+@2', status: 'in progress', isComplete: false, },
-        //     { id: '4t93wjtisef', title: 'Somthing To DO_2', body: 'example body+@2', status: 'complete', isComplete: true, },
-        //     { id: 'lfweuaejfpzj', title: 'Somthing To DO_2', body: 'example body+@2', status: 'in progress', isComplete: false, },
-        //     { id: 'g9w803aoejgr', title: 'Somthing To DO_2', body: 'example body+@2', status: 'complete', isComplete: true, },
-        //     { id: 'we9ghw93aoef', title: 'Somthing To DO_2', body: 'example body+@2', status: 'in progress', isComplete: false, },
-        //     { id: 'gew003jgef', title: 'Somthing To DO_2', body: 'example body+@2', status: 'in progress', isComplete: false, },
-        //     { id: '43w90utghsjeg', title: 'Somthing To DO_2', body: 'example body+@2', status: 'in progress', isComplete: false, },
-        //     { id: '3489w3thjssees', title: 'Somthing To DO_2', body: 'example body+@2', status: 'in progress', isComplete: false, },
-        //     { id: '4t90q3j4growe', title: 'Somthing To DO_2', body: 'example body+@2', status: 'in progress', isComplete: false, },
-        // ]
-        let fetchingTasks = []
-
-        const notCompleted = fetchingTasks.filter((task) => {
-            if (!task.isComplete) return true;
-            else return false;
-        })
-        const completed = fetchingTasks.filter((task) => {
-            if (task.isComplete) return true;
-            else return false;
-        })
-        setTasks(notCompleted);
-        setCompletedTasks(completed);
-        if (!notCompleted.length) {
-            openIsNotTasks();
-        }
-
+        let fetchingTasks = [];
+        getTasksDB().then((responseTasks) => {
+            fetchingTasks = responseTasks?.reverse();
+        }, (err) => console.log(err))
+            .then(() => {
+                const notCompleted = fetchingTasks.filter((task) => {
+                    if (!task.isComplete) return true;
+                    else return false;
+                })
+                const completed = fetchingTasks.filter((task) => {
+                    if (task.isComplete) return true;
+                    else return false;
+                })
+                setTasks(notCompleted);
+                setCompletedTasks(completed);
+                if (!notCompleted.length) {
+                    openIsNotTasks();
+                }
+            })
     }, []);
     // Отображает компонент-уведомление, что список задач пуст
-    function openIsNotTasks(delay) {
+    function openIsNotTasks() {
         Promise.resolve(setIsNotTasks(true))
             .then(() => {
-                gsap.to('.is-not-tasks', { scale: 1, duration: 0.5, delay: delay });
+                gsap.to('.is-not-tasks__container', { scale: 1, duration: 0.5 });
             });
     }
     // Скрывает компонент-уведомление, что список задач пуст
     function closeIsNotTasks() {
-        Promise.resolve(gsap.to('.is-not-tasks', { scale: 0, duration: 0.5 }))
+        Promise.resolve(gsap.to('.is-not-tasks__container', { scale: 0, duration: 0.4 }))
             .then(() => {
                 setIsNotTasks(false);
             });
@@ -145,20 +140,54 @@ const App = () => {
         }
     }
     // Функция определяет выбранную задачу как выполненную. Анимация выполнения задачи
-    function completeTask(taskID) {
-        const task = document.getElementById(taskID);
-        // Если выбран режим просмотра НЕ выполненных задач
-        if (modeView.current === 'not-complete') {
-            gsap.to(task, { left: '100%', duration: 0.4, delay: 0.15 })
-                .then(() => setTasks(tasks.filter((task) => {
-                    if (taskID !== task.id) {
-                        return true;
-                    } else {
-                        task.isComplete = true;
-                        task.status = 'complete';
-                        setCompletedTasks([task, ...completedTasks]);
-                    }
-                })));
+    async function completeTask(taskID) {
+        const response = await completeTaskDB(taskID);
+        if (response.status === true) {
+            const task = document.getElementById(taskID);
+            // Если выбран режим просмотра НЕ выполненных задач
+            if (modeView.current === 'not-complete') {
+                gsap.to(task, { left: '100%', duration: 0.4, delay: 0.15 })
+                    .then(() => setTasks(tasks.filter((task) => {
+                        if (taskID !== task.id) {
+                            return true;
+                        } else {
+                            task.isComplete = true;
+                            task.status = 'завершена!';
+                            setCompletedTasks([task, ...completedTasks]);
+                        }
+                    })))
+                    .then(() => {
+                        if (tasks.length === 1) {
+                            openIsNotTasks();
+                        }
+                    })
+            }
+        }
+    }
+    // Функция возвращает меняет статус задачи на не выполненный. Возвращает задачу в массив текущих задач
+    async function returnTask(taskID) {
+        const response = await returnTaskDB(taskID);
+        if (response.status === true) {
+            const task = document.getElementById(taskID);
+            // Если выбран режим просмотра НЕ выполненных задач
+            if (modeView.current === 'complete') {
+                gsap.to(task, { left: '100%', duration: 0.4, delay: 0.15 })
+                    .then(() => setCompletedTasks(completedTasks.filter((task) => {
+                        if (taskID !== task.id) {
+                            return true;
+                        } else {
+                            task.isComplete = false;
+                            task.status = 'в процессе';
+                            setTasks([task, ...tasks]);
+                        }
+                    })))
+                    .then(() => {
+                        if (completedTasks.length === 1) {
+                            openIsNotTasks();
+                        }
+                    })
+
+            }
         }
     }
     // Функция удаляет жестко задачу 
@@ -166,39 +195,63 @@ const App = () => {
         const task = document.getElementById(taskID);
         if (modeView.current === 'complete') {
             gsap.to(task, { left: '100%', duration: 0.4, delay: 0.15 })
-                .then(() => {
-                    setCompletedTasks([...completedTasks.filter(task => task.id !== taskID)])
-                    if (completedTasks.length === 1) setIsNotTasks(true);
+                .then(async () => {
+                    const response = await deleteTaskDB(taskID);
+                    if (response.status === true) {
+                        setCompletedTasks([...completedTasks.filter(task => task.id !== taskID)])
+                        if (completedTasks.length === 1) setIsNotTasks(true);
+                    }
                 })
-
+                .then(() => {
+                    if (completedTasks.length === 1) {
+                        openIsNotTasks();
+                    }
+                })
         }
         else if (modeView.current === 'not-complete') {
             gsap.to(task, { left: '100%', duration: 0.4, delay: 0.15 })
-                .then(() => setTasks([...tasks.filter(task => task.id !== taskID)]));
+                .then(async () => {
+                    const response = await deleteTaskDB(taskID);
+                    if (response.status === true) {
+                        setTasks([...tasks.filter(task => task.id !== taskID)]);
+                    }
+                })
+                .then(() => {
+                    if (tasks.length === 1) {
+                        openIsNotTasks();
+                    }
+                })
         }
     }
     // Функция создает задачу
-    function createTask(titleTask, bodyTask) {
-        console.log(titleTask, bodyTask);
+    async function createTask(titleTask, bodyTask) {
         const newTask = {};
         newTask.id = randomUUID();
         newTask.title = titleTask;
         newTask.body = bodyTask;
-        newTask.status = 'in progress';
+        newTask.status = 'в процессе';
         newTask.isComplete = false;
+        try {
+            const response = await createTaskDB(...Object.values(newTask));
+            console.log(response);
+        } catch (err) {
+            console.log(err);
+        }
         setTasks([newTask, ...tasks]);
         return openInProgressTasks();
     }
     // Функция редактирует задачу
     function editTask(taskID) {
-        tasks.forEach((task, index) => {
+        tasks.forEach(async (task, index) => {
             if (taskID === task.id) {
-                console.log('НАЙДЕН ', taskID, index);
                 task.title = titleTask;
                 task.body = bodyTask;
                 const newTasks = tasks
                 newTasks[index] = task;
-                setTasks(newTasks);
+                const response = await editTaskDB(taskID, titleTask, bodyTask);
+                if (response.status === true) {
+                    setTasks(newTasks);
+                }
                 return;
             }
         })
@@ -210,7 +263,9 @@ const App = () => {
         if (modeView.current === 'not-complete') return;
         if (isCreateNewTask) {
             gsap.to('.create-task__parent', { right: '100%', bottom: '100%', left: '', top: '', scale: 0, duration: 0.6 })
+            closeIsNotTasks();
         }
+        closeIsNotTasks();
         gsap.to('.task-list', { scale: '0', duration: .7 })
         gsap.to('.button-open-tabs', { scale: '0', duration: .7 })
         gsap.to('.task-list__parent', { width: '2%', duration: .7 })
@@ -218,9 +273,20 @@ const App = () => {
                 setIsCompletedTasks(false);
             })
             .then(() => {
-                openTabs()
+                if (isOpenTabs) {
+                    openTabs();
+                } else {
+                    gsap.to('.task-list__parent', { width: '92%', left: '4%', duration: 1 })
+                        .then(() => setInOpenTabs(false))
+                }
                 gsap.to('.navbar__mode-view', { right: '-100%', duration: 0.5 })
                     .then(() => setModeView({ title: 'Текущие задачи', current: 'not-complete' }))
+                    .then(() => {
+                        if (!tasks.length && modeView.current !== 'creation') {
+                            console.log(modeView);
+                            openIsNotTasks();
+                        }
+                    })
                 gsap.to('.button-open-tabs', { scale: '1', duration: .5, delay: 0.1 })
                 gsap.to('.task-list', { scale: '1', duration: .5, delay: 0.1 })
             })
@@ -235,7 +301,9 @@ const App = () => {
         if (modeView.current === 'complete') return;
         if (isCreateNewTask) {
             gsap.to('.create-task__parent', { right: '100%', bottom: '100%', left: '', top: '', scale: 0, duration: 0.6 })
+            closeIsNotTasks();
         }
+        closeIsNotTasks();
         gsap.to('.task-list', { scale: '0', duration: .7 })
         gsap.to('.button-open-tabs', { scale: '0', duration: .7 })
         gsap.to('.task-list__parent', { width: '2%', duration: .7 })
@@ -243,9 +311,21 @@ const App = () => {
                 setIsCompletedTasks(true);
             })
             .then(() => {
-                openTabs();
+                if (isOpenTabs) {
+                    openTabs();
+                } else {
+                    gsap.to('.task-list__parent', { width: '92%', left: '4%', duration: 1 })
+                        .then(() => setInOpenTabs(false))
+
+                }
                 gsap.to('.navbar__mode-view', { right: '-100%', duration: 0.5 })
                     .then(() => setModeView({ title: 'Выполненные задачи', current: 'complete' }))
+                    .then(() => {
+                        if (!completedTasks.length && modeView.current !== 'creation' || modeView.current !== 'not-complete') {
+                            console.log(modeView);
+                            openIsNotTasks();
+                        }
+                    })
                 gsap.to('.button-open-tabs', { scale: '1', duration: .5, delay: 0.1 })
                 gsap.to('.task-list', { scale: '1', duration: .5, delay: 0.1 })
             })
@@ -277,6 +357,9 @@ const App = () => {
                 openInProgressTasks={openInProgressTasks}
                 openIsNotTasks={openIsNotTasks}
                 closeIsNotTasks={closeIsNotTasks}
+                setLengthTasks={setLengthTasks}
+                lengthTasks={lengthTasks}
+                returnTask={returnTask}
             />
             <Tabs
                 openCompletedTasks={openCompletedTasks}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import MyInput from "./UI/input";
 import '../styles/CreateTask.css';
 

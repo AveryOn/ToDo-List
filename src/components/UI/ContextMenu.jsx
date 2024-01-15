@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import '../../styles/ContextMenu.css';
 
 export default function ContextMenu({
@@ -12,6 +12,7 @@ export default function ContextMenu({
     setBodyTask,
     deleteTask,
     setCurrentTaskID,
+    returnTask,
 }) {
     // Выполнение задачи
     function closureTask() {
@@ -21,7 +22,7 @@ export default function ContextMenu({
     // Редактирование задачи
     function editorTask(event) {
         event.stopPropagation();
-        setCurrentTaskID(taskID)
+        setCurrentTaskID(taskID);
         openEditorTask();
         setTitleTask(task.title);
         setBodyTask(task.body);
@@ -33,11 +34,19 @@ export default function ContextMenu({
         deleteTask(taskID);
         setIsActiveMenuTask(false);
     }
+    // Возвращение задачи в невыполненное состояние
+    function reTask(event) {
+        event.stopPropagation();
+        returnTask(taskID);
+        setIsActiveMenuTask(false);
+    }
     return (
         <ul className="context-menu__list">
-            <li className="context-menu__list--item" onClick={() => closureTask()} style={(isCompleteTask) ? { display: 'none' } : {}}>Завершить</li>
+            <li className="context-menu__list--item" onClick={(e) => reTask(e)} style={(!isCompleteTask) ? { display: 'none' } : {}}>Вернуть в текущие</li>
+            <li className="context-menu__list--item" onClick={() => closureTask()} style={(isCompleteTask) ? { display: 'none', border: 'none' } : {border:'none'}}>Завершить</li>
             <li className="context-menu__list--item" onClick={(e) => editorTask(e)} style={(isCompleteTask) ? { display: 'none' } : {}}>Редактировать</li>
-            <li className="context-menu__list--item" onClick={(e) => delTask(e)} style={(isCompleteTask) ? { border: 'none' } : {}}>Удалить</li>
+            <li className="context-menu__list--item" onClick={(e) => delTask(e)}>Удалить</li>
         </ul>
     )
 }
+

@@ -12,6 +12,7 @@ export default function Task({
     setBodyTask,
     deleteTask,
     setCurrentTaskID,
+    returnTask,
 }) {
     const [isActiveMenuTask, setIsActiveMenuTask] = useState(false);
     // Функция отображает контекстное меню задачи
@@ -39,6 +40,7 @@ export default function Task({
             setTitleTask={setTitleTask}
             setBodyTask={setBodyTask}
             deleteTask={deleteTask}
+            returnTask={returnTask}
             setCurrentTaskID={setCurrentTaskID}
         />
     } else {
@@ -69,7 +71,6 @@ export default function Task({
                 </p>
                 <button className="task__options-btn" onClick={activeContextMenu}>...</button>
             </div>
-            {/* <button className="task__button" onClick={() => deleteTask(index)}>Delete</button> */}
             {renderMenu}
         </li>
     )

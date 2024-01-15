@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import '../styles/TaskList.css';
 import Task from "./UI/task";
 import CreateTask from '../components/CreateTask';
@@ -27,6 +27,7 @@ export default function TaskList({
     openInProgressTasks,
     openIsNotTasks,
     closeIsNotTasks,
+    returnTask,
 }) {
     let renderTasks;
     let renderCreateTaskTable;
@@ -39,6 +40,7 @@ export default function TaskList({
                 completeTask={completeTask}
                 isCompletedTasks={isCompletedTasks}
                 deleteTask={deleteTask}
+                returnTask={returnTask}
                 key={task.id}
                 id={task.id}
             />
@@ -85,9 +87,12 @@ export default function TaskList({
             completedTasks={completedTasks}
         />
     }
+
     return (
         <div className="task-list__parent">
-            {renderIsNotTasks}
+            <div className="is-not-tasks__container">
+                {renderIsNotTasks}
+            </div>
             {renderCreateTaskTable}
             <button className="button-open-tabs" onClick={openTabs}>
                 <span className="material-symbols-outlined">
