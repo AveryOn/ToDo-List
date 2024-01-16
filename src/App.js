@@ -233,7 +233,6 @@ const App = () => {
         newTask.isComplete = false;
         try {
             const response = await createTaskDB(...Object.values(newTask));
-            console.log(response);
         } catch (err) {
             console.log(err);
         }
@@ -283,7 +282,6 @@ const App = () => {
                     .then(() => setModeView({ title: 'Текущие задачи', current: 'not-complete' }))
                     .then(() => {
                         if (!tasks.length && modeView.current !== 'creation') {
-                            console.log(modeView);
                             openIsNotTasks();
                         }
                     })
@@ -322,7 +320,6 @@ const App = () => {
                     .then(() => setModeView({ title: 'Выполненные задачи', current: 'complete' }))
                     .then(() => {
                         if (!completedTasks.length && modeView.current !== 'creation' || modeView.current !== 'not-complete') {
-                            console.log(modeView);
                             openIsNotTasks();
                         }
                     })

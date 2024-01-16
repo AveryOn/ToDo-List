@@ -63,6 +63,6 @@ app.post('/delete-task', (req, res) => {
     res.send({ status: true });
 });
 
-app.listen(3000, () => {
-    console.log('Порт запущен', 3000)
+app.listen(8080, () => {
+    console.log('Порт запущен', 8080)
 })

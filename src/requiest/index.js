@@ -1,9 +1,11 @@
 import axios from "axios";
 
+const hostName = 'http://localhost:8080';
+
 // Получение всех списка задач
 async function getTasksDB() {
     try {
-        const { data } = await axios.get('http://localhost:3000/get-tasks');
+        const { data } = await axios.get(hostName + '/get-tasks');
         return data;
     } catch (err) {
         throw err;
@@ -13,7 +15,7 @@ async function getTasksDB() {
 // Создание задачи
 function createTaskDB(id, title, body, status, isComplete) {
     try {
-        axios.post('http://localhost:3000/create-task', {
+        axios.post(hostName + '/create-task', {
             id,
             title,
             body,
@@ -34,7 +36,7 @@ function createTaskDB(id, title, body, status, isComplete) {
 // Выполнение задачи
 async function completeTaskDB(taskID) {
     try {
-        const { data } = await axios.put('http://localhost:3000/complete-task', {
+        const { data } = await axios.put(hostName + '/complete-task', {
             taskID
         }, {
             headers: {
@@ -50,7 +52,7 @@ async function completeTaskDB(taskID) {
 // Возврат задачи в невыполненное состояние
 async function returnTaskDB(taskID) {
     try {
-        const { data } = await axios.put('http://localhost:3000/return-task', {
+        const { data } = await axios.put(hostName + '/return-task', {
             taskID
         }, {
             headers: {
@@ -65,7 +67,7 @@ async function returnTaskDB(taskID) {
 // Редактирование задачи
 async function editTaskDB(taskID, taskTitle, taskBody) {
     try {
-        const { data } = await axios.put('http://localhost:3000/edit-task', {
+        const { data } = await axios.put(hostName + '/edit-task', {
             taskID,
             taskTitle,
             taskBody,
@@ -82,7 +84,7 @@ async function editTaskDB(taskID, taskTitle, taskBody) {
 // Удаление задачи
 async function deleteTaskDB(taskID) {
     try {
-        const { data } = await axios.post('http://localhost:3000/delete-task', {
+        const { data } = await axios.post(hostName + '/delete-task', {
             taskID,
         });
         return data;
